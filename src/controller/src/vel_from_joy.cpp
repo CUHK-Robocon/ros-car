@@ -1,28 +1,74 @@
+// TODO: fix left right joystick deadzone issue
+// TODO: make L2 R2 to float
+
 #include <memory>
 
 #include "rclcpp/rclcpp.hpp"
 #include "sensor_msgs/msg/joy.hpp"
 
-class MinimalSubscriber : public rclcpp::Node
-{
-public:
-  MinimalSubscriber()
-  : Node("minimal_subscriber")
-  {
-    auto topic_callback =
-      [this](sensor_msgs::msg::Joy::UniquePtr msg) -> void {
-        RCLCPP_INFO(this->get_logger(), "left_x: '%f'", msg->axes[0]);
-      };
-    subscription_ =
-      this->create_subscription<sensor_msgs::msg::Joy>("joy", 10, topic_callback);
+class MinimalSubscriber : public rclcpp::Node {
+ public:
+  MinimalSubscriber() : Node("vel_from_joy") {
+    auto topic_callback = [this](sensor_msgs::msg::Joy::UniquePtr msg) -> void {
+      auto axis_left_x = -msg->axes[0];
+      auto axis_left_y = msg->axes[1];
+      auto axis_right_x = -msg->axes[3];
+      auto axis_right_y = msg->axes[4];
+
+      auto btn_cross = msg->buttons[0];
+      auto btn_circle = msg->buttons[1];
+      auto btn_triangle = msg->buttons[2];
+      auto btn_square = msg->buttons[3];
+
+      auto btn_lmenu = msg->buttons[8];
+      auto btn_mmenu = msg->buttons[10];
+      auto btn_rmenu = msg->buttons[9];
+
+      auto btn_lstick = msg->buttons[11];
+      auto btn_rstick = msg->buttons[12];
+
+      auto btn_l1 = msg->buttons[4];
+      auto btn_r1 = msg->buttons[5];
+      auto btn_l2 = msg->buttons[6];
+      auto btn_r2 = msg->buttons[7];
+
+      int btn_left = 0;
+      int btn_right = 0;
+      int btn_up = 0;
+      int btn_down = 0;
+
+      auto dpad_ud = msg->axes[7];
+      auto dpad_lr = msg->axes[6];
+
+      btn_up = dpad_ud == 1;
+      btn_down = dpad_ud == -1;
+      btn_left = dpad_lr == 1;
+      btn_right = dpad_lr == -1;
+
+      RCLCPP_INFO(this->get_logger(),
+                  "LEFTX: '%f', LEFTY: '%f', RIGHTX: '%f', RIGHTY: '%f'",
+                  axis_left_x, axis_left_y, axis_right_x, axis_right_y);
+      RCLCPP_INFO(this->get_logger(),
+                  "CROSS: '%d', CIRCLE: '%d', TRIANGLE: '%d', SQUARE: '%d', "
+                  "UP: '%d', DOWN: '%d', LEFT: '%d', RIGHT: '%d'",
+                  btn_cross, btn_circle, btn_triangle, btn_square, btn_up,
+                  btn_down, btn_left, btn_right);
+      RCLCPP_INFO(this->get_logger(), "LMENU: '%d', MMENU: '%d', RMENU: '%d'",
+                  btn_lmenu, btn_mmenu, btn_rmenu);
+      RCLCPP_INFO(this->get_logger(), "L1: '%d', R1: '%d', L2: '%d', R2: '%d'",
+                  btn_l1, btn_r1, btn_l2, btn_r2);
+      RCLCPP_INFO(this->get_logger(), "LSTICK: '%d', RSTICK: '%d'", btn_lstick,
+                  btn_rstick);
+    };
+    subscription_ = this->create_subscription<sensor_msgs::msg::Joy>(
+        "joy", 10, topic_callback);
   }
 
-private:
+ private:
   rclcpp::Subscription<sensor_msgs::msg::Joy>::SharedPtr subscription_;
 };
 
-int main(int argc, char * argv[])
-{
+int main(int argc, char* argv[]) {
   rclcpp::init(argc, argv);
   rclcpp::spin(std::make_shared<MinimalSubscriber>());
   rclcpp::shutdown();
