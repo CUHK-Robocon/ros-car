@@ -1,6 +1,3 @@
-// TODO: fix left right joystick deadzone issue
-// TODO: make L2 R2 to float
-
 #include <memory>
 
 #include "rclcpp/rclcpp.hpp"
@@ -29,8 +26,8 @@ class MinimalSubscriber : public rclcpp::Node {
 
       auto btn_l1 = msg->buttons[4];
       auto btn_r1 = msg->buttons[5];
-      auto btn_l2 = msg->buttons[6];
-      auto btn_r2 = msg->buttons[7];
+      auto btn_l2 = -(msg->axes[2] - 1) / 2;
+      auto btn_r2 = -(msg->axes[5] - 1) / 2;
 
       int btn_left = 0;
       int btn_right = 0;
@@ -55,7 +52,7 @@ class MinimalSubscriber : public rclcpp::Node {
                   btn_down, btn_left, btn_right);
       RCLCPP_INFO(this->get_logger(), "LMENU: '%d', MMENU: '%d', RMENU: '%d'",
                   btn_lmenu, btn_mmenu, btn_rmenu);
-      RCLCPP_INFO(this->get_logger(), "L1: '%d', R1: '%d', L2: '%d', R2: '%d'",
+      RCLCPP_INFO(this->get_logger(), "L1: '%d', R1: '%d', L2: '%f', R2: '%f'",
                   btn_l1, btn_r1, btn_l2, btn_r2);
       RCLCPP_INFO(this->get_logger(), "LSTICK: '%d', RSTICK: '%d'", btn_lstick,
                   btn_rstick);
