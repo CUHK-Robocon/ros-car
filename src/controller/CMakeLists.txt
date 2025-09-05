@@ -13,10 +13,16 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(sensor_msgs REQUIRED)
-find_package(std_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
 
 add_executable(vel_from_joy src/vel_from_joy.cpp src/deadzone.cpp)
-target_link_libraries(vel_from_joy PUBLIC rclcpp::rclcpp ${sensor_msgs_TARGETS})
+target_link_libraries(
+  vel_from_joy 
+  PUBLIC 
+    rclcpp::rclcpp 
+    ${sensor_msgs_TARGETS} 
+    ${geometry_msgs_TARGETS}
+)
 
 install(TARGETS
   vel_from_joy

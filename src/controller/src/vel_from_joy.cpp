@@ -26,7 +26,7 @@ class JoyToVelNode : public rclcpp::Node {
   void joy_callback(const sensor_msgs::msg::Joy::SharedPtr msg) {
     auto axis_left_x = -msg->axes[0];
     auto axis_left_y = msg->axes[1];
-    auto axis_right_x = -msg->axes[3];
+    auto axis_right_x = msg->axes[3];
     auto axis_right_y = msg->axes[4];
 
     auto btn_cross = msg->buttons[0];
