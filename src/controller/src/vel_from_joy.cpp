@@ -1,7 +1,10 @@
+// TODO: maybe make a publisher to publish the mapped joystick output
+
 #include <memory>
 
 #include "rclcpp/rclcpp.hpp"
 #include "sensor_msgs/msg/joy.hpp"
+#include "deadzone.h"
 
 class MinimalSubscriber : public rclcpp::Node {
  public:
@@ -56,6 +59,15 @@ class MinimalSubscriber : public rclcpp::Node {
                   btn_l1, btn_r1, btn_l2, btn_r2);
       RCLCPP_INFO(this->get_logger(), "LSTICK: '%d', RSTICK: '%d'", btn_lstick,
                   btn_rstick);
+
+      double scale = 1 + 8 * btn_r2;
+
+      double x = controller_deadzone(axis_left_x, 0.1) * scale;
+      double y = controller_deadzone(axis_left_y, 0.1) * scale;
+      double rx = controller_deadzone(axis_right_x, 0.1);
+
+      RCLCPP_INFO(this->get_logger(), "x: '%f', y: '%f', rx: '%f'", x, y, rx);
+
     };
     subscription_ = this->create_subscription<sensor_msgs::msg::Joy>(
         "joy", 10, topic_callback);
