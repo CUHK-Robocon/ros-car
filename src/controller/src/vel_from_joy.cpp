@@ -19,7 +19,7 @@ class JoyToVelNode : public rclcpp::Node {
         "joy", 10,
         std::bind(&JoyToVelNode::joy_callback, this, std::placeholders::_1));
 
-    RCLCPP_INFO(this->get_logger(), "Joy to Vel node has been started.");
+    RCLCPP_INFO(this->get_logger(), "vel_from_joy node has been started.");
   }
 
  private:
