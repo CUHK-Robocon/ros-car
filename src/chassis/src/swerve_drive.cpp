@@ -1,3 +1,5 @@
+// TODO: make safety - e.g. if cmd_vel dies and topic callback is no longer
+// called, call another function to send 0 to chs routine hander
 #include <boost/qvm/vec.hpp>
 #include <memory>
 #include <numbers>
@@ -12,7 +14,7 @@ class MinimalSubscriber : public rclcpp::Node {
  public:
   MinimalSubscriber(chassis& chs) : Node("swerve_drive"), chs_(chs) {
     subscription_ = this->create_subscription<geometry_msgs::msg::Twist>(
-        "cmd_vel", 10,
+        "cmd_vel", 1,
         std::bind(&MinimalSubscriber::topic_callback, this,
                   std::placeholders::_1));
     RCLCPP_INFO(this->get_logger(), "vel_from_joy node has been started.");
@@ -24,8 +26,8 @@ class MinimalSubscriber : public rclcpp::Node {
     auto y = msg->linear.y;
     auto rx = msg->angular.z;
 
-    RCLCPP_INFO(this->get_logger(),
-                "Received from cmd_vel: x=%.2f, y=%.2f, rx=%.2f", x, y, rx);
+    // RCLCPP_INFO(this->get_logger(),
+    //             "Received from cmd_vel: x=%.2f, y=%.2f, rx=%.2f", x, y, rx);
 
     boost::qvm::vec<double, 2> vel{x, y};
     chs_.set_vel(vel);
@@ -61,8 +63,10 @@ int main(int argc, char* argv[]) {
   mch1.start_monitor_thread();
   mch2.start_monitor_thread();
 
+  std::cout << "waiting all ready" << std::endl;
   mch1.wait_all_ready();
   mch2.wait_all_ready();
+  std::cout << "all ready" << std::endl;
 
   active_caster_chassis chs_impl(0.05, {
                                            {.steering = lfs,
