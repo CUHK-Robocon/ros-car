@@ -1,5 +1,5 @@
-#ifndef ROS_CAR_SRC_UTIL_H_
-#define ROS_CAR_SRC_UTIL_H_
+#ifndef ROS_CAR_SRC_CONTROLLER_UTIL_H_
+#define ROS_CAR_SRC_CONTROLLER_UTIL_H_
 
 template <typename T>
 T sign(T v) {
