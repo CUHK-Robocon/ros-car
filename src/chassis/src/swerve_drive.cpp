@@ -84,6 +84,8 @@ int main(int argc, char* argv[]) {
                                        });
   chassis& chs = chs_impl;
 
+  chs_impl.set_zero();
+
   rclcpp::init(argc, argv);
 
   rclcpp::spin(std::make_shared<MinimalSubscriber>(chs));
