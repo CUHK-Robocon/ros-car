@@ -1,4 +1,5 @@
 // TODO: make safety - e.g. if cmd_vel dies and topic callback is no longer
+// TODO: reset wheels
 // called, call another function to send 0 to chs routine hander
 #include <boost/qvm/vec.hpp>
 #include <memory>
@@ -13,11 +14,15 @@
 class MinimalSubscriber : public rclcpp::Node {
  public:
   MinimalSubscriber(chassis& chs) : Node("swerve_drive"), chs_(chs) {
-    subscription_ = this->create_subscription<geometry_msgs::msg::Twist>(
-        "cmd_vel", 1,
+    cmd_vel_subscription_ = this->create_subscription<geometry_msgs::msg::Twist>(
+        "cmd_vel", 10,
         std::bind(&MinimalSubscriber::topic_callback, this,
                   std::placeholders::_1));
-    RCLCPP_INFO(this->get_logger(), "vel_from_joy node has been started.");
+
+    // joy_subscription_ = this->create_subscription<sensor_msgs::msg::Joy>(
+    //     "joy", 10,
+    //     std::bind(&MinimalSubscriber::joy_callback, this, std::placeholders::_1));
+    // RCLCPP_INFO(this->get_logger(), "vel_from_joy node has been started.");
   }
 
  private:
@@ -30,19 +35,36 @@ class MinimalSubscriber : public rclcpp::Node {
     //             "Received from cmd_vel: x=%.2f, y=%.2f, rx=%.2f", x, y, rx);
 
     boost::qvm::vec<double, 2> vel{x, y};
-    chs_.set_vel(vel);
-    double avel;
-    if (rx) {
-      avel = -rx * std::numbers::pi;
-    } else {
-      avel = 0.0;
-    }
-    chs_.set_ang_vel(avel);
+      chs_.set_vel(vel);
+      double avel;
+      if (rx) {
+        avel = rx * std::numbers::pi;
+      } else {
+        avel = 0.0;
+      }
+      chs_.set_ang_vel(avel);
 
-    chs_.routine_handler();
+      chs_.routine_handler();
+    // if (ctlr_state.left_menu) { // button change
+    //   chs_impl.reset();
+    // } else if (ctlr_state.south) { // button change
+    //   chs_impl.lock_wheels();
+    // } else {
+    //   boost::qvm::vec<double, 2> vel{x, y};
+    //   chs_.set_vel(vel);
+    //   double avel;
+    //   if (rx) {
+    //     avel = rx * std::numbers::pi;
+    //   } else {
+    //     avel = 0.0;
+    //   }
+    //   chs_.set_ang_vel(avel);
+
+    //   chs_.routine_handler();
+    // }
   };
 
-  rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr subscription_;
+  rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_subscription_;
   chassis& chs_;
 };
 

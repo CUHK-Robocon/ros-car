@@ -13,10 +13,10 @@ class JoyToVelNode : public rclcpp::Node {
  public:
   JoyToVelNode() : Node("vel_from_joy") {
     publisher_ =
-        this->create_publisher<geometry_msgs::msg::Twist>("cmd_vel", 1);
+        this->create_publisher<geometry_msgs::msg::Twist>("cmd_vel", 10);
 
     subscription_ = this->create_subscription<sensor_msgs::msg::Joy>(
-        "joy", 1,
+        "joy", 10,
         std::bind(&JoyToVelNode::joy_callback, this, std::placeholders::_1));
 
     RCLCPP_INFO(this->get_logger(), "vel_from_joy node has been started.");
