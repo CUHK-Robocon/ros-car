@@ -15,6 +15,7 @@ find_package(rclcpp REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(fmt REQUIRED)
 find_package(Boost REQUIRED)
+find_package(sensor_msgs REQUIRED)
 
 add_subdirectory(vesccom EXCLUDE_FROM_ALL)
 
@@ -31,6 +32,7 @@ target_link_libraries(
     rclcpp::rclcpp 
     ${geometry_msgs_TARGETS}
     ${MAIN_SBC_LIBRARIES}
+    ${sensor_msgs_TARGETS}
 )
 
 install(TARGETS
